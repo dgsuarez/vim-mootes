@@ -11,7 +11,7 @@ Usage
 -   `:M [noteName]` opens a vsplit for the note. If no name is given, opens the
     default `g:defaultNote`
 -    `:Ml` lists notes
--    `:Mg search` searches in the notesnote
+-    `:Mg search` searches in the notes content
 -    `:Mz` fuzzy searching using [vim-fzf](https://github.com/junegunn/fzf.vim)
 
 
