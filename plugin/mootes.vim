@@ -12,11 +12,23 @@ let g:defaultNote = 'scratch'
 
 function! s:Note(...)
   let note = a:0 ? a:1 : g:defaultNote
+  let safeNote = substitute(note, ' ', '_', 'ge')
   let emptyWindow = bufname('%') == ''
   let hasSplits = winnr('$') > 1
   let openCommand = (emptyWindow ||  hasSplits) ? 'edit' : 'vsplit'
 
-  execute openCommand . ' ' . g:notesDir . note . '.md'
+  execute openCommand . ' ' . g:notesDir . safeNote . '.md'
+
+  if line('$') == 1 && getline(1) == ''
+    call s:AddNoteTitle(note)
+    normal jo
+  end
+endfunction
+
+function! s:AddNoteTitle(note)
+  call append(line('1'), '# ' . a:note)
+  1s/_/ /ge
+  1s/\<./\u&/ge
 endfunction
 
 function! s:NoteListCommand()
