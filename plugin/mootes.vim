@@ -47,12 +47,15 @@ endfunction
 
 function! s:NoteGrep(...)
   let saved_shellpipe = &shellpipe
+  let saved_cwd = getcwd()
   let &shellpipe = '>'
+  execute 'lcd ' . g:notesDir
   try
     execute('silent grep! ' . a:1 . ' ' . g:notesDir .'/*')
     copen
   finally
     let &shellpipe = saved_shellpipe
+    execute 'lcd ' . saved_cwd
   endtry
 endfunction
 
