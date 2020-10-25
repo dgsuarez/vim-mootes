@@ -32,7 +32,7 @@ function! s:AddNoteTitle(note)
 endfunction
 
 function! s:NoteListCommand()
-  return "ls -t " . g:notesDir . " | sed 's/\.md$//'"
+  return "ls -t " . g:notesDir . " | grep -v '.archived.md$' | sed 's/\.md$//'"
 endfunction
 
 function! s:NoteComplete(...)
@@ -47,16 +47,28 @@ endfunction
 
 function! s:NoteGrep(...)
   let saved_shellpipe = &shellpipe
+  let saved_wildignore = &wildignore
   let &shellpipe = '>'
+  let &wildignore = saved_wildignore . ',*.archived.md'
   try
     execute('silent grep! ' . a:1 . ' ' . g:notesDir .'/*')
     copen
   finally
     let &shellpipe = saved_shellpipe
+    let &saved_wildignore = saved_wildignore
   endtry
+endfunction
+
+function! s:NoteArchive()
+  let full_file = expand("%")
+  let archived_file = expand("%:r") . '.archived.md'
+
+  system('mv ' . full_file . ' ' . archived_file)
+  bdelete
 endfunction
 
 command! -nargs=? -complete=custom,s:NoteComplete M call s:Note(<f-args>)
 command! -nargs=0 Ml call s:COpenNoteList()
 command! -nargs=1 Mg call s:NoteGrep(<f-args>)
 command! -nargs=0 Mz call execute('Files ' . g:notesDir)
+command! -nargs=0 Marchive call s:NoteArchive()
